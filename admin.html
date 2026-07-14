@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Stock Manage Karo (Pahwa Auto Spares)</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .form-card { background: var(--gray); border-radius: 14px; padding: 24px; margin-bottom: 24px; }
+  .form-card h3 { color: var(--blue); font-size: 20px; margin-bottom: 18px; }
+  .btn-add { background: var(--orange); color: white; border: none; border-radius: 10px; padding: 13px 28px; font-size: 17px; font-family: 'Hind', sans-serif; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+  .btn-add:hover { background: var(--orange-dark); }
+  .btn-del { background: #E53E3E; color: white; border: none; border-radius: 6px; padding: 5px 12px; font-size: 13px; cursor: pointer; font-family: 'Hind', sans-serif; font-weight: 600; }
+  .manage-list { margin-top: 14px; }
+  .manage-item { background: white; border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); flex-wrap: wrap; gap: 8px; font-size: 15px; }
+  .manage-item .mname { font-weight: 600; color: var(--text); }
+  .manage-item .mprice { color: var(--orange-dark); font-weight: 700; }
+  .success-msg { background: var(--green-light); color: var(--green); border-radius: 8px; padding: 10px 16px; font-weight: 600; font-size: 15px; display: none; margin-top: 10px; }
+  .admin-warning { background: #FFF3CD; border: 2px solid #E8A33D; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #7a5200; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo-text">🔐 Admin Panel — Pahwa Auto Spares</span>
+  <div class="logo-sub">Yeh page sirf aapke liye hai — customers ko yeh link mat dena</div>
+</header>
+
+<main>
+  <div class="admin-warning">
+    ⚠️ <strong>Yeh page private hai.</strong> Iska link kisi customer ko mat bhejna. Sirf aap (dukaan ke malik) yahan se stock add/delete karenge.
+  </div>
+
+  <h2 class="sec-title">📋 Stock Manage Karo</h2>
+
+  <div class="form-card">
+    <h3>🔑 Admin Password</h3>
+    <div class="form-row">
+      <label>Password Daalo (sirf ek baar, phir yaad rahega is device pe)</label>
+      <input type="password" id="pAdminPass" placeholder="Aapka admin password" />
+    </div>
+    <div id="passStatus" style="font-size:14px;color:var(--text-muted);"></div>
+  </div>
+
+  <div class="form-card">
+    <h3>➕ Naya Part Add Karo</h3>
+    <div class="form-row">
+      <label>Part ka Naam (Hindi/English)</label>
+      <input type="text" id="pName" placeholder="Jaise: Piston Ring Set, Oil Seal..." />
+    </div>
+    <div class="form-row">
+      <label>Category Chuniye</label>
+      <select id="pCat" onchange="toggleImageField()">
+        <option value="">-- Category --</option>
+        <option>Engine Parts</option>
+        <option>Seals & Gaskets</option>
+        <option>Tractor Accessories</option>
+        <option>Engine Oils</option>
+      </select>
+    </div>
+    <div class="form-row" id="imageFieldRow" style="display:none;">
+      <label>Oil Ki Photo (optional, par customer ko achha lagega)</label>
+      <input type="file" id="pImage" accept="image/*" onchange="previewImage(event)" />
+      <div id="imagePreviewBox" style="margin-top:10px;"></div>
+    </div>
+    <div class="form-row">
+      <label>Part ki Condition</label>
+      <select id="pCond">
+        <option value="new">New</option>
+        <option value="old">Old / Used</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Tractor Brand (optional)</label>
+      <input type="text" id="pBrand" placeholder="Jaise: Mahindra, Swaraj, Sonalika..." />
+    </div>
+    <div class="form-row">
+      <label>Daam (₹)</label>
+      <input type="number" id="pPrice" placeholder="Jaise: 250" />
+    </div>
+    <div class="form-row">
+      <label>Stock Mein Kitna Hai</label>
+      <input type="number" id="pStock" placeholder="Jaise: 10" />
+    </div>
+    <button class="btn-add" onclick="addProduct()">✅ Add Karo</button>
+    <div class="success-msg" id="addMsg">✅ Part successfully add ho gaya!</div>
+  </div>
+
+  <div class="form-card">
+    <h3>📦 Aapka Current Stock (Website pe customers ko yeh dikhega category page pe)</h3>
+    <div class="manage-list" id="manageList">
+      <p style="color:var(--text-muted); font-size:15px;">Abhi koi part add nahi hua. Upar se add karo.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <strong>Pahwa Auto Spares — Admin Panel</strong><br>
+  <a href="index.html" style="color:#FFD580;">⬅ Customer Website Par Wapas Jao</a>
+</footer>
+
+<script>
+const PASS_KEY = 'pahwa_admin_pass';
+
+function getPassword() {
+  return sessionStorage.getItem(PASS_KEY) || '';
+}
+
+document.getElementById('pAdminPass').value = getPassword();
+document.getElementById('pAdminPass').addEventListener('input', (e) => {
+  sessionStorage.setItem(PASS_KEY, e.target.value);
+});
+
+async function getProducts() {
+  try {
+    const res = await fetch('products.json?_=' + Date.now());
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.products || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function callApi(action, payload) {
+  const password = getPassword();
+  if (!password) {
+    alert('Pehle upar password daalo.');
+    throw new Error('no password');
+  }
+  const res = await fetch('/api/products', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password, action, ...payload }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'Kuch galat ho gaya');
+  }
+  return data;
+}
+
+let currentImageData = null;
+
+function toggleImageField() {
+  const cat = document.getElementById('pCat').value;
+  const row = document.getElementById('imageFieldRow');
+  row.style.display = (cat === 'Engine Oils') ? 'block' : 'none';
+}
+
+function previewImage(event) {
+  const file = event.target.files[0];
+  if (!file) { currentImageData = null; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    currentImageData = e.target.result;
+    document.getElementById('imagePreviewBox').innerHTML =
+      `<img src="${currentImageData}" style="max-width:140px; max-height:140px; border-radius:8px; border:2px solid var(--border);">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function addProduct() {
+  const name = document.getElementById('pName').value.trim();
+  const cat = document.getElementById('pCat').value;
+  const cond = document.getElementById('pCond').value;
+  const brand = document.getElementById('pBrand').value.trim();
+  const price = document.getElementById('pPrice').value;
+  const stock = document.getElementById('pStock').value;
+  if (!name || !cat) { alert('Naam aur category zaroori hai!'); return; }
+
+  const newProduct = { name, cat, cond, brand, price, stock };
+  if (cat === 'Engine Oils' && currentImageData) {
+    newProduct.image = currentImageData;
+  }
+
+  const btn = document.querySelector('.btn-add');
+  btn.disabled = true;
+  btn.textContent = '⏳ Save ho raha hai...';
+  try {
+    await callApi('add', { product: newProduct });
+    document.getElementById('pName').value = '';
+    document.getElementById('pBrand').value = '';
+    document.getElementById('pPrice').value = '';
+    document.getElementById('pStock').value = '';
+    document.getElementById('pCat').value = '';
+    document.getElementById('imageFieldRow').style.display = 'none';
+    document.getElementById('imagePreviewBox').innerHTML = '';
+    currentImageData = null;
+    const msg = document.getElementById('addMsg');
+    msg.textContent = '✅ Part successfully add ho gaya! (Website par ~30-60 second me dikhega)';
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 4000);
+    renderManageList();
+  } catch (err) {
+    alert('❌ ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✅ Add Karo';
+  }
+}
+
+async function renderManageList() {
+  const el = document.getElementById('manageList');
+  el.innerHTML = '<p style="color:var(--text-muted);font-size:15px;">⏳ Loading...</p>';
+  const products = await getProducts();
+  if (products.length === 0) {
+    el.innerHTML = '<p style="color:var(--text-muted);font-size:15px;">Abhi koi part add nahi hua.</p>';
+    return;
+  }
+  el.innerHTML = [...products].reverse().map(p => `
+    <div class="manage-item">
+      <div style="display:flex; align-items:center; gap:10px;">
+        ${p.image ? `<img src="${p.image}" style="width:44px;height:44px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:white;">` : ''}
+        <div>
+          <div class="mname">${p.name} <span style="font-size:12px;background:${p.cond==='new'?'var(--green-light)':'#FFF8E1'};color:${p.cond==='new'?'var(--green)':'#B8860B'};padding:2px 8px;border-radius:10px;font-weight:600;">${p.cond==='new'?'New':'Old'}</span></div>
+          <div style="font-size:13px;color:var(--text-muted);">${p.cat}${p.brand?' • '+p.brand:''} • Stock: ${p.stock||'?'}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="mprice">${p.price?'₹'+Number(p.price).toLocaleString('en-IN'):'—'}</span>
+        <button class="btn-del" onclick="deleteProduct(${p.id})">🗑 Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Kya aap is part ko delete karna chahte hain?')) return;
+  try {
+    await callApi('delete', { id });
+    renderManageList();
+  } catch (err) {
+    alert('❌ ' + err.message);
+  }
+}
+
+renderManageList();
+</script>
+</body>
+</html>
+

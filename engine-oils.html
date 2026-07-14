@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engine Oils - Pahwa Auto Spares</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <span>📍 Nai Mandi, Workshop Area, Hanumangarh Town</span>
+  <span>📞 <a href="tel:+919057555200">Varun: +91 90575 55200</a> &nbsp;|&nbsp; <a href="tel:+918764154744">Ashok: +91 87641 54744</a></span>
+</div>
+
+<header>
+  <a href="index.html" class="logo-text">🚜 Pahwa Auto Spares</a>
+  <div class="logo-sub">Tractor Parts • Engine Parts • Seals • Accessories</div>
+  <div class="header-badge">Since 1985 — Trusted in Hanumangarh</div>
+</header>
+
+<nav>
+  <a href="index.html">🏠 Home</a>
+  <a href="products.html" class="active">🔧 Products</a>
+  <a href="contact.html">📞 Contact Us</a>
+</nav>
+
+<main>
+  <a href="products.html" class="back-link">⬅ Sabhi Categories Dekho</a>
+  <h2 class="sec-title">🛢️ Engine Oils</h2>
+  <div class="product-list" id="productList">
+    <p class="hint-msg">Loading...</p>
+  </div>
+</main>
+
+<a class="wa-float" href="https://wa.me/919057555200?text=Namaste! Pahwa Auto Spares se part chahiye." target="_blank" title="WhatsApp">💬</a>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle">Part Ke Baare Mein Poochho</h3>
+    <div class="form-row">
+      <label>Aapka Naam</label>
+      <input type="text" id="eqName" placeholder="Aapka naam likhein..." />
+    </div>
+    <div class="form-row">
+      <label>Aapka Mobile Number</label>
+      <input type="tel" id="eqPhone" placeholder="+91 XXXXX XXXXX" />
+    </div>
+    <div class="form-row">
+      <label>Part / Message</label>
+      <textarea id="eqMsg" rows="3" placeholder="Kaunsa part chahiye, tractor model..."></textarea>
+    </div>
+    <button class="btn-wa-send" onclick="sendEnquiry()">💬 WhatsApp Par Bhejo</button>
+  </div>
+</div>
+
+<footer>
+  <strong>Pahwa Auto Spares</strong> — Hanumangarh Town, Rajasthan<br>
+  Tractor Parts • Engine Parts • Seals • Old & New Parts • Accessories<br><br>
+  <span>© 2025 Pahwa Auto Spares. All rights reserved.</span>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  renderOilGrid("Engine Oils");
+</script>
+</body>
+</html>
