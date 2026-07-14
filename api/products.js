@@ -42,7 +42,8 @@ export default async function handler(req, res) {
 
     const getResp = await fetch(apiUrl, { headers: ghHeaders });
     if (!getResp.ok) {
-      throw new Error('products.json GitHub se nahi mil paya (' + getResp.status + ')');
+      const errBody = await getResp.text();
+      throw new Error('products.json GitHub se nahi mil paya (status ' + getResp.status + '): ' + errBody);
     }
     const fileData = await getResp.json();
     const sha = fileData.sha;
