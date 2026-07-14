@@ -16,10 +16,10 @@ export default async function handler(req, res) {
   }
 
   const { password, action, product, id } = req.body || {};
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-  const GITHUB_REPO = process.env.GITHUB_REPO;
-  const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+  const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || '').trim();
+  const GITHUB_TOKEN = (process.env.GITHUB_TOKEN || '').trim();
+  const GITHUB_REPO = (process.env.GITHUB_REPO || '').trim();
+  const GITHUB_BRANCH = (process.env.GITHUB_BRANCH || 'main').trim();
   const FILE_PATH = 'products.json';
 
   if (!ADMIN_PASSWORD || !GITHUB_TOKEN || !GITHUB_REPO) {
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     const getResp = await fetch(apiUrl, { headers: ghHeaders });
     if (!getResp.ok) {
       const errBody = await getResp.text();
-      throw new Error('products.json GitHub se nahi mil paya (status ' + getResp.status + '): ' + errBody);
+      throw new Error('products.json GitHub se nahi mil paya (status ' + getResp.status + ', repo="' + GITHUB_REPO + '", branch="' + GITHUB_BRANCH + '"): ' + errBody);
     }
     const fileData = await getResp.json();
     const sha = fileData.sha;
