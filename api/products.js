@@ -5,34 +5,44 @@
 //
 // Needs these Environment Variables set in the Vercel project (Settings > Environment Variables):
 //   GITHUB_TOKEN   - a GitHub Personal Access Token with "contents: read & write" on this repo
-//   GITHUB_REPO    - "owner/repo", e.g. "rishipahwajee2024-cmyk/pahwautospares"
+//   GITHUB_REPO    - "owner/repo", e.g. "rishipahwajee2024-cmyk/pahwaauto"
 //   ADMIN_PASSWORD - the password you'll type into admin.html to make changes
 //   GITHUB_BRANCH  - optional, defaults to "main"
 
+export const config = {
+  maxDuration: 30,
+};
+
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
-  }
-
-  const { password, action, product, id } = req.body || {};
-  const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || '').trim();
-  const GITHUB_TOKEN = (process.env.GITHUB_TOKEN || '').trim();
-  const GITHUB_REPO = (process.env.GITHUB_REPO || '').trim();
-  const GITHUB_BRANCH = (process.env.GITHUB_BRANCH || 'main').trim();
-  const FILE_PATH = 'products.json';
-
-  if (!ADMIN_PASSWORD || !GITHUB_TOKEN || !GITHUB_REPO) {
-    res.status(500).json({ error: 'Server abhi set up nahi hua hai. Vercel me GITHUB_TOKEN, GITHUB_REPO aur ADMIN_PASSWORD add karo.' });
-    return;
-  }
-
-  if (password !== ADMIN_PASSWORD) {
-    res.status(401).json({ error: 'Galat password.' });
-    return;
-  }
-
+  // Everything is wrapped so nothing can crash the function silently.
   try {
+    if (req.method !== 'POST') {
+      res.status(405).json({ error: 'Method not allowed' });
+      return;
+    }
+
+    let body = req.body;
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body); } catch (e) { body = {}; }
+    }
+    const { password, action, product, id } = body || {};
+
+    const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || '').trim();
+    const GITHUB_TOKEN = (process.env.GITHUB_TOKEN || '').trim();
+    const GITHUB_REPO = (process.env.GITHUB_REPO || '').trim();
+    const GITHUB_BRANCH = (process.env.GITHUB_BRANCH || 'main').trim();
+    const FILE_PATH = 'products.json';
+
+    if (!ADMIN_PASSWORD || !GITHUB_TOKEN || !GITHUB_REPO) {
+      res.status(500).json({ error: 'Server abhi set up nahi hua hai. Vercel me GITHUB_TOKEN, GITHUB_REPO aur ADMIN_PASSWORD add karo.' });
+      return;
+    }
+
+    if (password !== ADMIN_PASSWORD) {
+      res.status(401).json({ error: 'Galat password.' });
+      return;
+    }
+
     const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}?ref=${GITHUB_BRANCH}`;
     const ghHeaders = {
       Authorization: `Bearer ${GITHUB_TOKEN}`,
@@ -43,7 +53,8 @@ export default async function handler(req, res) {
     const getResp = await fetch(apiUrl, { headers: ghHeaders });
     if (!getResp.ok) {
       const errBody = await getResp.text();
-      throw new Error('products.json GitHub se nahi mil paya (status ' + getResp.status + ', repo="' + GITHUB_REPO + '", branch="' + GITHUB_BRANCH + '"): ' + errBody);
+      res.status(500).json({ error: 'products.json GitHub se nahi mil paya (status ' + getResp.status + ', repo="' + GITHUB_REPO + '", branch="' + GITHUB_BRANCH + '"): ' + errBody });
+      return;
     }
     const fileData = await getResp.json();
     const sha = fileData.sha;
@@ -77,11 +88,16 @@ export default async function handler(req, res) {
 
     if (!putResp.ok) {
       const errText = await putResp.text();
-      throw new Error('GitHub update fail hua: ' + errText);
+      res.status(500).json({ error: 'GitHub update fail hua: ' + errText });
+      return;
     }
 
     res.status(200).json({ ok: true, products });
   } catch (err) {
-    res.status(500).json({ error: err.message || 'Kuch galat ho gaya.' });
+    try {
+      res.status(500).json({ error: (err && err.message) ? err.message : String(err), stack: (err && err.stack) ? String(err.stack).slice(0, 500) : null });
+    } catch (e2) {
+      res.status(500).send('Fatal error: ' + String(err));
+    }
   }
 }
