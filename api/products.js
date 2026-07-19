@@ -9,10 +9,6 @@
 //   ADMIN_PASSWORD - the password you'll type into admin.html to make changes
 //   GITHUB_BRANCH  - optional, defaults to "main"
 
-export const config = {
-  maxDuration: 30,
-};
-
 export default async function handler(req, res) {
   // Everything is wrapped so nothing can crash the function silently.
   try {
