@@ -60,8 +60,8 @@
       </select>
     </div>
     <div class="form-row" id="imageFieldRow" style="display:none;">
-      <label>Oil Ki Photo (optional, par customer ko achha lagega)</label>
-      <input type="file" id="pImage" accept="image/*" onchange="previewImage(event)" />
+      <label>Oil ki Photo ka Link (optional) — Google Images ya kahin se photo ka URL copy karke yahan paste karo</label>
+      <input type="url" id="pImageUrl" placeholder="https://... (photo ka link)" oninput="previewImageUrl()" />
       <div id="imagePreviewBox" style="margin-top:10px;"></div>
     </div>
     <div class="form-row">
@@ -148,24 +148,17 @@ async function callApi(action, payload) {
   return data;
 }
 
-let currentImageData = null;
-
 function toggleImageField() {
   const cat = document.getElementById('pCat').value;
   const row = document.getElementById('imageFieldRow');
   row.style.display = (cat === 'Engine Oils') ? 'block' : 'none';
 }
 
-function previewImage(event) {
-  const file = event.target.files[0];
-  if (!file) { currentImageData = null; return; }
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    currentImageData = e.target.result;
-    document.getElementById('imagePreviewBox').innerHTML =
-      `<img src="${currentImageData}" style="max-width:140px; max-height:140px; border-radius:8px; border:2px solid var(--border);">`;
-  };
-  reader.readAsDataURL(file);
+function previewImageUrl() {
+  const url = document.getElementById('pImageUrl').value.trim();
+  const box = document.getElementById('imagePreviewBox');
+  if (!url) { box.innerHTML = ''; return; }
+  box.innerHTML = `<img src="${url}" style="max-width:140px; max-height:140px; border-radius:8px; border:2px solid var(--border);" onerror="this.style.display='none'">`;
 }
 
 async function addProduct() {
@@ -178,8 +171,9 @@ async function addProduct() {
   if (!name || !cat) { alert('Naam aur category zaroori hai!'); return; }
 
   const newProduct = { name, cat, cond, brand, price, stock };
-  if (cat === 'Engine Oils' && currentImageData) {
-    newProduct.image = currentImageData;
+  const imageUrl = document.getElementById('pImageUrl').value.trim();
+  if (cat === 'Engine Oils' && imageUrl) {
+    newProduct.image = imageUrl;
   }
 
   const btn = document.querySelector('.btn-add');
@@ -192,9 +186,9 @@ async function addProduct() {
     document.getElementById('pPrice').value = '';
     document.getElementById('pStock').value = '';
     document.getElementById('pCat').value = '';
+    document.getElementById('pImageUrl').value = '';
     document.getElementById('imageFieldRow').style.display = 'none';
     document.getElementById('imagePreviewBox').innerHTML = '';
-    currentImageData = null;
     const msg = document.getElementById('addMsg');
     msg.textContent = '✅ Part successfully add ho gaya! (Website par ~30-60 second me dikhega)';
     msg.style.display = 'block';
@@ -247,4 +241,3 @@ renderManageList();
 </script>
 </body>
 </html>
-
