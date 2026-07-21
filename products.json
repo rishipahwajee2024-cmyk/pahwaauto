@@ -17,15 +17,6 @@
       "price": "2700",
       "stock": "50",
       "id": 1784294603318
-    },
-    {
-      "name": "Ria",
-      "cat": "Engine Oils",
-      "cond": "old",
-      "brand": "Natang",
-      "price": "0",
-      "stock": "1",
-      "id": 1784652443840
     }
   ]
 }
