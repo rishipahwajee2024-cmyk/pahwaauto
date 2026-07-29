@@ -31,10 +31,17 @@
     <h2>Rajasthan Ki Sabse Bharosemand Dukan!</h2>
     <p>New & old tractor spare parts, engine parts, seals, accessories — sab kuch milega yahan.<br>Quality guaranteed. Best price in Hanumangarh.</p>
   </div>
+
+  <h2 class="sec-title" style="font-size:19px; border-bottom-width:2px;">📂 Category Se Seedha Jump Karo</h2>
+  <div class="cat-quicknav">
+    <a href="#cat-engine-parts"><span class="icon">⚙️</span><h3>Engine Parts</h3></a>
+    <a href="#cat-seals-gaskets"><span class="icon">🛡️</span><h3>Seals & Gaskets</h3></a>
+    <a href="#cat-accessories"><span class="icon">🚜</span><h3>Accessories</h3></a>
+    <a href="#cat-engine-oils"><span class="icon">🛢️</span><h3>Engine Oils</h3></a>
+    <a href="#cat-hydraulic-pumps"><span class="icon">🔩</span><h3>Hydraulic / Lift Pumps</h3></a>
+  </div>
+
   <div class="quick-grid">
-    <a href="products.html" class="quick-btn">
-      <span class="icon">🔧</span>Tractor Parts Dekho
-    </a>
     <a href="https://wa.me/919057555200?text=Namaste! Mujhe ek part ke baare mein poochna hai." target="_blank" class="quick-btn">
       <span class="icon">📲</span>WhatsApp Par Poochho
     </a>
@@ -45,32 +52,69 @@
       <span class="icon">📞</span>Abhi Call Karo
     </a>
   </div>
+
+  <!-- LIVE PRODUCT SECTIONS — same data as the Products pages, shown right here -->
+  <section class="home-section" id="cat-engine-parts">
+    <div class="home-section-head">
+      <h2>⚙️ Engine Parts</h2>
+      <a href="engine-parts.html">Sabhi Engine Parts Dekho →</a>
+    </div>
+    <div class="product-list" id="home-engine-parts">
+      <p class="hint-msg">⏳ Loading...</p>
+    </div>
+  </section>
+
+  <section class="home-section" id="cat-seals-gaskets">
+    <div class="home-section-head">
+      <h2>🛡️ Seals & Gaskets</h2>
+      <a href="seals-gaskets.html">Sabhi Seals & Gaskets Dekho →</a>
+    </div>
+    <div class="product-list" id="home-seals-gaskets">
+      <p class="hint-msg">⏳ Loading...</p>
+    </div>
+  </section>
+
+  <section class="home-section" id="cat-accessories">
+    <div class="home-section-head">
+      <h2>🚜 Tractor Accessories</h2>
+      <a href="accessories.html">Sabhi Accessories Dekho →</a>
+    </div>
+    <div class="product-list" id="home-accessories">
+      <p class="hint-msg">⏳ Loading...</p>
+    </div>
+  </section>
+
+  <section class="home-section" id="cat-engine-oils">
+    <div class="home-section-head">
+      <h2>🛢️ Engine Oils</h2>
+      <a href="engine-oils.html">Sabhi Engine Oils Dekho →</a>
+    </div>
+    <div id="home-engine-oils">
+      <p class="hint-msg">⏳ Loading...</p>
+    </div>
+  </section>
+
+  <section class="home-section" id="cat-hydraulic-pumps">
+    <div class="home-section-head">
+      <h2>🔩 Hydraulic / Lift Pumps</h2>
+      <a href="hydraulic-pumps.html">Sabhi Tractor Companies Dekho →</a>
+    </div>
+    <div id="home-hydraulic-pumps">
+      <p class="hint-msg">⏳ Loading...</p>
+    </div>
+  </section>
+
+  <h2 class="sec-title">🤝 Hum Par Kyun Bharosa Karein?</h2>
   <div class="info-grid">
-    <div class="info-box">
+    <div class="info-box reveal">
       <h3>✅ New Parts</h3>
       <p>Original & quality new tractor spare parts for all brands — Mahindra, Swaraj, Sonalika, John Deere, Eicher & more.</p>
     </div>
-    <div class="info-box">
+    <div class="info-box reveal">
       <h3>♻️ Old / Used Parts</h3>
       <p>Tested used parts at low prices. Seals, bearings, pistons, clutch plates sab available.</p>
     </div>
-    <div class="info-box">
-      <h3>⚙️ Engine Parts</h3>
-      <p>Pistons, rings, liners, con-rods, valve kits, crankshafts — engine ka poora kaam yahan.</p>
-    </div>
-    <div class="info-box">
-      <h3>🛡️ Seals & Gaskets</h3>
-      <p>All types of oil seals, gasket sets, O-rings for all popular tractor models.</p>
-    </div>
-    <div class="info-box">
-      <h3>🛢️ Engine Oils</h3>
-      <p>Genuine engine oils for all tractor brands — long lasting, smooth performance.</p>
-    </div>
-    <div class="info-box">
-      <h3>🪛 Accessories</h3>
-      <p>Filters, belts, lights, battery, tyres, drawbar, hydraulic parts aur bahut kuch.</p>
-    </div>
-    <div class="info-box">
+    <div class="info-box reveal">
       <h3>🚚 Home Delivery</h3>
       <p>Hanumangarh aur aas-paas ke ilaakon mein part delivery available. Call karo!</p>
     </div>
@@ -79,11 +123,40 @@
 
 <a class="wa-float" href="https://wa.me/919057555200?text=Namaste! Pahwa Auto Spares se part chahiye." target="_blank" title="WhatsApp">💬</a>
 
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle">Part Ke Baare Mein Poochho</h3>
+    <div class="form-row">
+      <label>Aapka Naam</label>
+      <input type="text" id="eqName" placeholder="Aapka naam likhein..." />
+    </div>
+    <div class="form-row">
+      <label>Aapka Mobile Number</label>
+      <input type="tel" id="eqPhone" placeholder="+91 XXXXX XXXXX" />
+    </div>
+    <div class="form-row">
+      <label>Part / Message</label>
+      <textarea id="eqMsg" rows="3" placeholder="Kaunsa part chahiye, tractor model..."></textarea>
+    </div>
+    <button class="btn-wa-send" onclick="sendEnquiry()">💬 WhatsApp Par Bhejo</button>
+  </div>
+</div>
+
 <footer>
   <strong>Pahwa Auto Spares</strong> — Hanumangarh Town, Rajasthan<br>
   Tractor Parts • Engine Parts • Seals • Old & New Parts • Accessories<br><br>
   <span>© 2025 Pahwa Auto Spares. All rights reserved.</span>
 </footer>
 
+<script src="script.js"></script>
+<script>
+  renderProductsSection('home-engine-parts', 'Engine Parts', 'list');
+  renderProductsSection('home-seals-gaskets', 'Seals & Gaskets', 'list');
+  renderProductsSection('home-accessories', 'Tractor Accessories', 'list');
+  renderProductsSection('home-engine-oils', 'Engine Oils', 'cards');
+  renderProductsSection('home-hydraulic-pumps', 'Hydraulic / Lift Pumps', 'cards');
+  initScrollReveal(document);
+</script>
 </body>
 </html>
