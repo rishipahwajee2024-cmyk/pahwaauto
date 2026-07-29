@@ -57,10 +57,11 @@
         <option>Seals & Gaskets</option>
         <option>Tractor Accessories</option>
         <option>Engine Oils</option>
+        <option>Hydraulic / Lift Pumps</option>
       </select>
     </div>
     <div class="form-row" id="imageFieldRow" style="display:none;">
-      <label>Oil ki Photo ka Link (optional) — Google Images ya kahin se photo ka URL copy karke yahan paste karo</label>
+      <label>Photo ka Link (optional) — Google Images ya kahin se photo ka URL copy karke yahan paste karo</label>
       <input type="url" id="pImageUrl" placeholder="https://... (photo ka link)" oninput="previewImageUrl()" />
       <div id="imagePreviewBox" style="margin-top:10px;"></div>
     </div>
@@ -72,8 +73,18 @@
       </select>
     </div>
     <div class="form-row">
-      <label>Tractor Brand (optional)</label>
-      <input type="text" id="pBrand" placeholder="Jaise: Mahindra, Swaraj, Sonalika..." />
+      <label id="brandLabel">Tractor Brand (optional)</label>
+      <input type="text" id="pBrand" list="brandList" placeholder="Jaise: Mahindra, Swaraj, Sonalika..." />
+      <datalist id="brandList">
+        <option>John Deere</option>
+        <option>Mahindra</option>
+        <option>Swaraj</option>
+        <option>Sonalika</option>
+        <option>Eicher</option>
+        <option>Massey Ferguson</option>
+        <option>New Holland</option>
+        <option>Farmtrac</option>
+      </datalist>
     </div>
     <div class="form-row">
       <label>Daam (₹)</label>
@@ -151,7 +162,14 @@ async function callApi(action, payload) {
 function toggleImageField() {
   const cat = document.getElementById('pCat').value;
   const row = document.getElementById('imageFieldRow');
-  row.style.display = (cat === 'Engine Oils') ? 'block' : 'none';
+  const showImage = (cat === 'Engine Oils' || cat === 'Hydraulic / Lift Pumps');
+  row.style.display = showImage ? 'block' : 'none';
+  const brandLabel = document.getElementById('brandLabel');
+  if (cat === 'Hydraulic / Lift Pumps') {
+    brandLabel.textContent = 'Tractor Company (Zaroori hai — isi se subsection banta hai)';
+  } else {
+    brandLabel.textContent = 'Tractor Brand (optional)';
+  }
 }
 
 function previewImageUrl() {
@@ -169,10 +187,11 @@ async function addProduct() {
   const price = document.getElementById('pPrice').value;
   const stock = document.getElementById('pStock').value;
   if (!name || !cat) { alert('Naam aur category zaroori hai!'); return; }
+  if (cat === 'Hydraulic / Lift Pumps' && !brand) { alert('Hydraulic / Lift Pumps ke liye Tractor Company likhna zaroori hai (jaise Mahindra, John Deere...)'); return; }
 
   const newProduct = { name, cat, cond, brand, price, stock };
   const imageUrl = document.getElementById('pImageUrl').value.trim();
-  if (cat === 'Engine Oils' && imageUrl) {
+  if ((cat === 'Engine Oils' || cat === 'Hydraulic / Lift Pumps') && imageUrl) {
     newProduct.image = imageUrl;
   }
 
